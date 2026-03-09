@@ -1,40 +1,622 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-<title>Register</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account — AppName</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface-2: #1a1a1a;
+    --border: #2a2a2a;
+    --border-hover: #444444;
+    --text-primary: #f0f0f0;
+    --text-secondary: #888888;
+    --text-muted: #555555;
+    --accent: #f0f0f0;
+    --accent-hover: #ffffff;
+    --error: #ff4444;
+    --success: #44cc88;
+    --mono: 'Geist Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
 
+  *, *::before, *::after {
+    margin: 0; padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--sans);
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    overflow: hidden;
+  }
+
+  /* LEFT PANEL */
+  .left-panel {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .grid-bg {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1;
+  }
+
+  .brand-mark {
+    width: 32px; height: 32px;
+    background: var(--text-primary);
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+  }
+
+  .brand-mark svg {
+    width: 18px; height: 18px;
+    fill: none;
+    stroke: var(--bg);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .brand-name {
+    font-family: var(--mono);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  .left-content {
+    z-index: 1;
+  }
+
+  .left-content .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .left-content .eyebrow::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--text-muted);
+  }
+
+  .left-content h1 {
+    font-size: clamp(36px, 4vw, 52px);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+  }
+
+  .left-content h1 em {
+    font-style: italic;
+    color: var(--text-secondary);
+  }
+
+  .left-content p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    font-weight: 300;
+    max-width: 360px;
+  }
+
+  .steps-list {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .step-item:last-child { border-bottom: none; }
+
+  .step-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    padding-top: 2px;
+    min-width: 20px;
+  }
+
+  .step-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  .step-text strong {
+    color: var(--text-primary);
+    font-weight: 500;
+    display: block;
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+
+  .left-footer {
+    z-index: 1;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* RIGHT PANEL */
+  .right-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    background: var(--bg);
+    overflow-y: auto;
+  }
+
+  .form-card {
+    width: 100%;
+    max-width: 400px;
+    animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-header {
+    margin-bottom: 32px;
+  }
+
+  .form-header h2 {
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .form-header p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 300;
+  }
+
+  .form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+    position: relative;
+  }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 7px;
+    font-family: var(--mono);
+  }
+
+  .input-wrap {
+    position: relative;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 400;
+    padding: 13px 16px;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    -webkit-appearance: none;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus {
+    border-color: var(--border-hover);
+    background: var(--surface-2);
+  }
+
+  input::placeholder {
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    transition: color 0.2s;
+    width: auto;
+    margin: 0;
+  }
+
+  .password-toggle:hover { color: var(--text-secondary); }
+
+  input.has-toggle { padding-right: 46px; }
+
+  /* Password strength */
+  .strength-bar {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+  }
+
+  .strength-segment {
+    flex: 1;
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    transition: background 0.3s;
+  }
+
+  .strength-segment.active-weak   { background: #ff4444; }
+  .strength-segment.active-fair   { background: #ff8800; }
+  .strength-segment.active-good   { background: #ffcc00; }
+  .strength-segment.active-strong { background: #44cc88; }
+
+  .strength-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 5px;
+  }
+
+  /* Terms */
+  .terms-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 18px 0 22px;
+    cursor: pointer;
+  }
+
+  .terms-wrap input[type="checkbox"] { display: none; }
+
+  .custom-checkbox {
+    width: 16px; height: 16px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--surface);
+    display: grid;
+    place-items: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .terms-wrap input[type="checkbox"]:checked + .custom-checkbox {
+    background: var(--text-primary);
+    border-color: var(--text-primary);
+  }
+
+  .custom-checkbox svg { display: none; }
+  .terms-wrap input[type="checkbox"]:checked + .custom-checkbox svg { display: block; }
+
+  .terms-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    user-select: none;
+  }
+
+  .terms-text a {
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+
+  .terms-text a:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
+  }
+
+  .btn-primary {
+    width: 100%;
+    background: var(--text-primary);
+    color: var(--bg);
+    border: none;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    padding: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-primary:active { transform: scale(0.99); }
+
+  .message-box {
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .message-box.error {
+    background: rgba(255,68,68,0.08);
+    border: 1px solid rgba(255,68,68,0.2);
+    color: #ff6666;
+  }
+
+  .message-box.success {
+    background: rgba(68,204,136,0.08);
+    border: 1px solid rgba(68,204,136,0.2);
+    color: #44cc88;
+  }
+
+  .form-footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .form-footer a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .form-footer a:hover { color: var(--text-primary); }
+
+  @media (max-width: 768px) {
+    body { grid-template-columns: 1fr; }
+    .left-panel { display: none; }
+    .right-panel { padding: 32px 24px; align-items: flex-start; padding-top: 60px; }
+    .form-row-2 { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
-
 <body>
 
-<div class="container">
+<!-- LEFT PANEL -->
+<div class="left-panel">
+  <div class="grid-bg"></div>
 
-<h2>Create New Account</h2>
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <span class="brand-name">AppName</span>
+  </div>
 
-<form method="POST">
+  <div class="left-content">
+    <div class="eyebrow">Get started</div>
+    <h1>Join us<br><em>today.</em></h1>
+    <p>Create your account in seconds. No credit card needed, no commitments required.</p>
+    <div class="steps-list">
+      <div class="step-item">
+        <span class="step-num">01</span>
+        <div class="step-text"><strong>Create your account</strong>Fill in your details below</div>
+      </div>
+      <div class="step-item">
+        <span class="step-num">02</span>
+        <div class="step-text"><strong>Verify your email</strong>We'll send a confirmation link</div>
+      </div>
+      <div class="step-item">
+        <span class="step-num">03</span>
+        <div class="step-text"><strong>You're all set</strong>Start using AppName immediately</div>
+      </div>
+    </div>
+  </div>
 
-<input type="email" name="email" placeholder="Enter Email" required>
-
-<input type="text" name="username" placeholder="Choose Username" required>
-
-<input type="password" name="password" placeholder="Create Password" required>
-
-<input type="password" name="confirm" placeholder="Confirm Password" required>
-
-<button type="submit">Register</button>
-
-</form>
-
-<p class="msg">{{message}}</p>
-
-<p class="link">
-Already registered? 
-<a href="/">Login Now</a>
-</p>
-
+  <div class="left-footer">© 2025 AppName. All rights reserved.</div>
 </div>
 
+<!-- RIGHT PANEL -->
+<div class="right-panel">
+  <div class="form-card">
+
+    <div class="form-header">
+      <h2>Create account</h2>
+      <p>Fill in the details below to get started</p>
+    </div>
+
+    {% if message %}
+    <div class="message-box {% if 'Successful' in message %}success{% else %}error{% endif %}">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        {% if 'Successful' in message %}
+        <polyline points="20 6 9 17 4 12"></polyline>
+        {% else %}
+        <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+        {% endif %}
+      </svg>
+      {{ message }}
+    </div>
+    {% endif %}
+
+    <form method="POST">
+
+      <div class="form-group">
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="choose_username" required autocomplete="username">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <input type="password" id="password" name="password" placeholder="Create a strong password" required autocomplete="new-password" class="has-toggle" oninput="checkStrength(this.value)">
+          <button type="button" class="password-toggle" onclick="togglePassword('password', this)" aria-label="Toggle password">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+        <div class="strength-bar">
+          <div class="strength-segment" id="s1"></div>
+          <div class="strength-segment" id="s2"></div>
+          <div class="strength-segment" id="s3"></div>
+          <div class="strength-segment" id="s4"></div>
+        </div>
+        <div class="strength-label" id="strength-label"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirm">Confirm password</label>
+        <div class="input-wrap">
+          <input type="password" id="confirm" name="confirm" placeholder="Repeat your password" required autocomplete="new-password" class="has-toggle">
+          <button type="button" class="password-toggle" onclick="togglePassword('confirm', this)" aria-label="Toggle password">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <label class="terms-wrap">
+        <input type="checkbox" required>
+        <span class="custom-checkbox">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#0a0a0a" stroke-width="1.8">
+            <polyline points="1.5 5 4 7.5 8.5 2.5"></polyline>
+          </svg>
+        </span>
+        <span class="terms-text">
+          I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+        </span>
+      </label>
+
+      <button type="submit" class="btn-primary">
+        Create account
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </button>
+
+    </form>
+
+    <div class="form-footer">
+      Already have an account? <a href="/">Sign in →</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function togglePassword(fieldId, btn) {
+  const input = document.getElementById(fieldId);
+  const isHidden = input.type === 'password';
+  input.type = isHidden ? 'text' : 'password';
+  btn.innerHTML = isHidden
+    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+      </svg>`
+    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+        <circle cx="12" cy="12" r="3"></circle>
+      </svg>`;
+}
+
+function checkStrength(val) {
+  const segs = [document.getElementById('s1'), document.getElementById('s2'),
+                document.getElementById('s3'), document.getElementById('s4')];
+  const label = document.getElementById('strength-label');
+  segs.forEach(s => s.className = 'strength-segment');
+
+  if (!val) { label.textContent = ''; return; }
+
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+
+  const levels = ['', 'active-weak', 'active-fair', 'active-good', 'active-strong'];
+  const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+  const colors = ['', '#ff4444', '#ff8800', '#ffcc00', '#44cc88'];
+
+  for (let i = 0; i < score; i++) segs[i].classList.add(levels[score]);
+  label.textContent = labels[score];
+  label.style.color = colors[score];
+}
+</script>
 </body>
 </html>
