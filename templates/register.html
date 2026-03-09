@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Register</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Create New Account</h2>
+
+<form method="POST">
+
+<input type="email" name="email" placeholder="Enter Email" required>
+
+<input type="text" name="username" placeholder="Choose Username" required>
+
+<input type="password" name="password" placeholder="Create Password" required>
+
+<input type="password" name="confirm" placeholder="Confirm Password" required>
+
+<button type="submit">Register</button>
+
+</form>
+
+<p class="msg">{{message}}</p>
+
+<p class="link">
+Already registered? 
+<a href="/">Login Now</a>
+</p>
+
+</div>
+
+</body>
+</html>
